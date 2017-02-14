@@ -1,28 +1,27 @@
-# all the imports
-import os
-import sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, \
-     render_template, flash
-
-
+from flask import Flask,render_template
+from flask_script import Manager
+from flask_bootstrap import Bootstrap
+'''
+WEB页面主要代码
+'''
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = '**sbjtxy2017'
+bootstrap = Bootstrap(app)
+manager = Manager(app)
 @app.route('/')
-def hello_world():
-    return 'welcome to dreamiot system'
-	
-def connect_db():
-    """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-	
-def init_db():
-    with app.app_context():
-        db = get_db()
-        with app.open_resource('schema.sql', mode='r') as f:
-            db.cursor().executescript(f.read())
-        db.commit()
+def index():
+        return render_template('index.html')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=81)
+@app.errorhandler(404)
+def page_not_found(e):
+        return render_template('404.html')
+@app.errorhandler(500)
+def internal_sever_error(e):
+        return render_template('500.html')
+
+@app.route('/user/<name>')
+def user(name):
+        return render_template("SleepRecord.html",name=name)
+
+if __name__=='__main__':
+    app.run(debug=True)
